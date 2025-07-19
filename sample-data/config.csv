@@ -1,0 +1,9 @@
+~m,term,name,language
+,{pkey},language_node,name = '{lang}'
+~j,term_refs,term_id,reference_id
+,reference,name,{ref}
+~j,term_property,term,prop
+~c0,property_node,name,{}
+~c1,property_node,name,{}
+~r0,property_node,displayname,{1} {} Case
+~t,2,2,
