@@ -3,8 +3,9 @@
 
 import funcsv2db
 
+
 # the four functions below just append (unsafe) insert queries
-# in a "do" block. this is PostgreSQL PL/SQL.
+# in a "do" block. this is PL/pgSQL (Postgres).
 queries = ['']
 
 
@@ -70,6 +71,6 @@ if __name__ == "__main__":
 
     csv_extract = 'sample-data/pangasinan-personal-pronouns.csv'
     in_vars = {'lang': 'Pangasinan', 'ref': 'pang-ref-grammar-benton'}
-    # you can add limit=n to limit the output
+    # you can add limit=n to limit the entries to be processed
     funcsv2db.convert(csv_extract, init, end, main_query, junc_query, conf, capitalize, in_vars)
     print(queries[0])
