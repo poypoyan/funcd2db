@@ -63,7 +63,7 @@ def capitalize(s: str) -> str:
 if __name__ == "__main__":
     csv_config = 'sample-data/config.json'
 
-    with open(csv_config, 'rb') as conf_file:
+    with open(csv_config, 'r') as conf_file:
         conf = json.loads(conf_file.read())
 
     csv_extract = 'sample-data/pangasinan-personal-pronouns.csv'

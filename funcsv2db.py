@@ -9,18 +9,6 @@ from copy import deepcopy
 import csv, re
 
 
-def clean_list(l: list) -> list:
-    last_non_trail_idx = 0
-    out = []
-    for i, j in enumerate(l):
-        j_cl = j.strip()
-        out.append(j_cl)
-        if j_cl != '':
-            last_non_trail_idx = i
-
-    return out[:last_non_trail_idx + 1]
-
-
 def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
     conf: dict, pre_process, in_vars: dict, limit: int = None) -> None:
     if not 'pkey' in in_vars:
@@ -40,7 +28,7 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
         csv_reader = csv.reader(csv_file, delimiter=',')
 
         for _ in range(conf['header_rows']):
-            h_in_r.append(clean_list(next(csv_reader)[conf['header_cols']:]))
+            h_in_r.append(_clean_list(next(csv_reader)[conf['header_cols']:]))
         _refill_empty_r(h_in_r, conf['junc_wheres'])
 
         init_cb(conf['main']['table'], in_vars['pkey'], main_pkey)
@@ -51,7 +39,7 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
             i[1] = _in_vars_eval(i[1], in_vars)
 
         for row in csv_reader:
-            row_cl = clean_list(row)
+            row_cl = _clean_list(row)
 
             # conversion main part
             # assumes "Same Value in Same Row is Same Data" (SVSRSD) principle:
@@ -90,6 +78,18 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
             if limit != None and limit_ctr >= limit:
                 break
     end_cb()
+
+
+def _clean_list(l: list) -> list:
+    last_non_trail_idx = 0
+    out = []
+    for i, j in enumerate(l):
+        j_cl = j.strip()
+        out.append(j_cl)
+        if j_cl != '':
+            last_non_trail_idx = i
+
+    return out[:last_non_trail_idx + 1]
 
 
 def _fill_curr(new: str, curr: str) -> tuple:
