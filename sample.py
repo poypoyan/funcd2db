@@ -1,7 +1,7 @@
 # Distributed under the MIT software license. See the accompanying
 # file LICENSE or https://opensource.org/license/mit/.
 
-import funcsv2db
+import json, funcsv2db
 
 
 # the four functions below just append (unsafe) insert queries
@@ -27,36 +27,31 @@ def end() -> None:
 
 
 # query for entries
-# main - main table
 # entry - the entry data
-# main_fields - fields in the main to be inserted
-# sel_fields - other fields for "select" section in "insert select"
-# sel_from - "from" section for "select" section in "insert select"
-# sel_where - "where" section for "select" section in "insert select"
+# main - main dictionary from config json
 # pkey - primary key field of main
 # pkey_var - variable name of primary key of main
-def main_query(main: str, entry: str, main_fields: str,
-    sel_fields: str, sel_from: str, sel_where: str, pkey: str, pkey_var: str) -> None:
+def main_query(entry: str, main: dict, pkey: str, pkey_var: str) -> None:
+    joined_fields = ', '.join(main['all_fields'])
+    joined_vals = ', '.join(main['other_values'])
+    joined_where = ' and '.join([f'{i[0]} = \'{ i[1] }\'' for i in main['where']])
     queries[0] += f'''----
-insert into { main } ({ main_fields })
-select \'{ entry }\', { sel_fields } from { sel_from } where { sel_where }
+insert into { main['table'] } ({ joined_fields })
+select \'{ entry }\', { joined_vals } from { main['from'] } where { joined_where }
 returning { pkey } into { pkey_var };\n
 '''
 
 
 # query for headers
-# junc - junction table
 # header - the header data
-# main_forkey - foreign key for main table
-# other_forkey - foreign key for other table
-# other_table - "from" table for "select" section in "insert select"
-# other_field - "where" field for "select" section in "insert select"
-# pkey - primary key field of other (funcsv2db assumes to be same as in main)
+# junc_fields - junc_fields dictionary from config json
+# junc_where - an element from junc_where list from config json
+# pkey - primary key field of main
 # pkey_var - variable name of primary key of main
-def junc_query(junc: str, header: str, main_forkey: str, other_forkey: str,
-    other_table: str, other_field: str, pkey: str, pkey_var: str) -> None:
-    queries[0] += f'''insert into { junc } ({ main_forkey }, { other_forkey })
-select { pkey_var }, { pkey } from { other_table } where { other_field } = \'{ header }\';\n
+def junc_query(header: str, junc_fields: dict, junc_where: list, pkey: str, pkey_var: str) -> None:
+    joined_fields = ', '.join(junc_fields[junc_where[2]])
+    queries[0] += f'''insert into { junc_where[2] } ({ joined_fields })
+select { pkey_var }, { pkey } from { junc_where[3] } where { junc_where[4] } = \'{ header }\';\n
 '''
 
 
@@ -66,8 +61,10 @@ def capitalize(s: str) -> str:
 
 
 if __name__ == "__main__":
-    csv_config = 'sample-data/config.csv'
-    conf = funcsv2db.get_config(csv_config)
+    csv_config = 'sample-data/config.json'
+
+    with open(csv_config, 'rb') as conf_file:
+        conf = json.loads(conf_file.read())
 
     csv_extract = 'sample-data/pangasinan-personal-pronouns.csv'
     in_vars = {'lang': 'Pangasinan', 'ref': 'pang-ref-grammar-benton'}

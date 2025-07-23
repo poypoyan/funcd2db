@@ -1,0 +1,23 @@
+{
+    "main": {
+        "table": "term",
+        "all_fields": ["name", "language"],
+        "other_values": ["{pkey}"],
+        "from": "language_node",
+        "where": [
+            ["name", "{lang}"]
+        ]
+    },
+    "junc_fields": {
+        "term_refs": ["term_id", "reference_id"],
+        "term_property": ["term", "prop"]
+    },
+    "junc_wheres": [
+        ["", 0, "term_refs", "reference", "name", "{ref}"],
+        ["c", 0, "term_property", "property_node", "name", "{}"],
+        ["c", 1, "term_property", "property_node", "name", "{}"],
+        ["r", 0, "term_property", "property_node", "displayname", "{1} {} Case"]
+    ],
+    "header_rows": 2,
+    "header_cols": 2
+}
