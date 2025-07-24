@@ -1,10 +1,10 @@
-,,Nominative,,Genitive,Oblique
-,,,Short,,
-1st Person,Singular,siák,ak,ko,siák
-2nd Person,Singular,siká,ka,mo,siká
-3rd Person,Singular,sikató,-a,to,sikató
-1st Person,Dual,sikatá,itá,ta,sikatá
-,Inclusive,sikatayó,itayó,tayó,sikatayó
-,Exclusive,sikamí,kamí,mi,sikamí
-2nd Person,Plural,sikayó,kayó,yo,sikayó
-3rd Person,,sikará,irá,da,sikará
+,,Nominative,,Genitive,Oblique,Possessive
+,,,Short,,,
+1st Person,Singular,siák,ak,ko,ëd siák,siák
+2nd Person,Singular,siká,ka,mo,ëd siká,siká
+3rd Person,Singular,sikató,-a,to,ëd sikató,sikató
+1st Person,Dual,sikatá,itá,ta,ëd sikatá,sikatá
+,Inclusive,sikatayó,itayó,tayó,ëd sikatayó,sikatayó
+,Exclusive,sikamí,kamí,mi,ëd sikamí,sikamí
+2nd Person,Plural,sikayó,kayó,yo,ëd sikayó,sikayó
+3rd Person,,sikará,irá,da,ëd sikará,sikará
