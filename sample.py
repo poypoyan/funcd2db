@@ -69,10 +69,10 @@ if __name__ == "__main__":
     csv_extract = 'sample-data/pangasinan-personal-pronouns.csv'
     in_vars = {'lang': 'Pangasinan', 'ref': 'pang-ref-grammar-benton'}
 
-    # optional variables:
+    # optional parameters:
     # * limit: int = None - to limit the entries to be processed
     # * svsrsd: bool = True - SVSRSD assumption
-    # * ditto_row: bool = True - ditto assumption for row prior headers
+    # * ditto_row: bool = True - ditto assumption for row headers
     # * ditto_col: bool = True - ditto assumption for column headers
     funcsv2db.convert(csv_extract, init, end, main_query, junc_query, conf, capitalize, in_vars)
     print(queries[0])
