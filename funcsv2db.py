@@ -10,7 +10,8 @@ import csv, re
 
 
 def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
-    conf: dict, pre_process, in_vars: dict, limit: int = None) -> None:
+    conf: dict, pre_process, in_vars: dict, limit: int = None,
+    svsrsd: bool = True, ditto_row: bool = True, ditto_col: bool = True) -> None:
     if not 'pkey' in in_vars:
         in_vars['pkey'] = 'id'
 
@@ -20,16 +21,18 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
     limit_ctr = 0
     main_copy = None
 
-    for i in conf['junc_wheres']:
-        if i[0] == 'c':
-            saved_h_in_c[i[1]] = ''
+    if ditto_col:
+        for i in conf['junc_wheres']:
+            if i[0] == 'c':
+                saved_h_in_c[i[1]] = ''
 
     with open(extract_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
 
         for _ in range(conf['header_rows']):
             h_in_r.append(_clean_list(next(csv_reader)[conf['header_cols']:]))
-        _refill_empty_r(h_in_r, conf['junc_wheres'])
+        if ditto_row:
+            _refill_empty_r(h_in_r, conf['junc_wheres'])
 
         init_cb(conf['main']['table'], in_vars['pkey'], main_pkey)
 
@@ -53,11 +56,12 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
                 main_cb(pre_process(j), main_copy, in_vars['pkey'], main_pkey)
 
                 rows_svsrsd = []
-                for k0, k1 in enumerate(row_cl[conf['header_cols'] + i + 1:]):
-                    if k1 == j:
-                        skip_idx = i + k0 + 1
-                        skip_svsrsd.append(skip_idx)
-                        rows_svsrsd.append(skip_idx)
+                if svsrsd:
+                    for k0, k1 in enumerate(row_cl[conf['header_cols'] + i + 1:]):
+                        if k1 == j:
+                            skip_idx = i + k0 + 1
+                            skip_svsrsd.append(skip_idx)
+                            rows_svsrsd.append(skip_idx)
 
                 for k in conf['junc_wheres']:
                     iv_evaled = _in_vars_eval(k[5], in_vars)
@@ -142,7 +146,7 @@ def _table_eval(in_str: str, idx: int, jw: list,
                 ext_str = h_in_r[jw[1] + jump][idx]
         elif jw[0] == 'c':
             ext_str = row_cl[jw[1] + jump]
-            if jump == 0:
+            if jump == 0 and jw[1] in saved_h_in_c:
                 saved_h_in_c[jw[1]], ext_str = _fill_curr(saved_h_in_c[jw[1]], ext_str)
 
         eval_str += in_str[last_end:i.start()] + ext_str
