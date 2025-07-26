@@ -18,12 +18,12 @@
             "other_table": "reference" , "field": "name", "value": "{ref}"
         },
         {
-            "row_col": "c", "nth": 0, "ditto": false, "junc_table": "term_property",
+            "row_col": "c", "nth": 0, "ditto": true, "junc_table": "term_property",
             "other_table": "property_node" , "field": "name", "value": "{}"
         },
         {
             "row_col": "c", "nth": 1, "ditto": true, "junc_table": "term_property",
-            "other_table": "property_node" , "field": "name", "value": "{}"
+            "other_table": "property_node" , "field": "displayname", "value": "{}"
         },
         {
             "row_col": "r", "nth": 0, "ditto": true, "junc_table": "term_property",

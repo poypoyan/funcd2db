@@ -54,6 +54,7 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
 
         init_cb(conf['main'], in_vars['pkey'], main_pkey)
 
+        # evaluate values in main dict
         main_copy = deepcopy(conf['main'])
         main_copy['other_values'] = [_in_vars_eval(i, in_vars) for i in main_copy['other_values']]
         for i in main_copy['where']:
@@ -135,7 +136,7 @@ def _in_vars_eval(in_str: str, in_vars: dict) -> str:
         eval_str += in_str[last_end:i.start()] + append_str
         last_end = i.end()
     eval_str += in_str[last_end:]
-    return eval_str.strip()
+    return eval_str
 
 
 def _table_eval(in_str: str, idx: int, jw: dict,
@@ -144,19 +145,19 @@ def _table_eval(in_str: str, idx: int, jw: dict,
     last_end = 0
     for i in re.finditer('{.*?}', in_str):
         jump = int(0 if i.group()[1:-1] == '' else i.group()[1:-1])
-        ext_str = ''
+        append_str = ''
 
         if jw['row_col'] == 'r':
             if jump == 0:
-                ext_str = h_in_r[jw['nth']][idx]
+                append_str = h_in_r[jw['nth']][idx]
             elif idx < len(h_in_r[jw['nth'] + jump]):
-                ext_str = h_in_r[jw['nth'] + jump][idx]
+                append_str = h_in_r[jw['nth'] + jump][idx]
         elif jw['row_col'] == 'c':
-            ext_str = row_cl[jw['nth'] + jump]
+            append_str = row_cl[jw['nth'] + jump]
             if jump == 0 and jw['nth'] in saved_h_in_c:
-                saved_h_in_c[jw['nth']], ext_str = _fill_curr(ext_str, saved_h_in_c[jw['nth']])
+                saved_h_in_c[jw['nth']], append_str = _fill_curr(append_str, saved_h_in_c[jw['nth']])
 
-        eval_str += in_str[last_end:i.start()] + ext_str
+        eval_str += in_str[last_end:i.start()] + append_str
         last_end = i.end()
     eval_str += in_str[last_end:]
-    return eval_str.strip()
+    return re.sub(' +', ' ', eval_str.strip())
