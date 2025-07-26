@@ -34,7 +34,7 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
         if ditto_row:
             _refill_empty_r(h_in_r, conf['junc_wheres'])
 
-        init_cb(conf['main']['table'], in_vars['pkey'], main_pkey)
+        init_cb(conf['main'], in_vars['pkey'], main_pkey)
 
         main_copy = deepcopy(conf['main'])
         main_copy['other_values'] = [_in_vars_eval(i, in_vars) for i in main_copy['other_values']]

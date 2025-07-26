@@ -10,13 +10,13 @@ queries = ['']
 
 
 # runs before all queries for each entry
-# main - main table
+# main - main dictionary from config json
 # pkey - primary key field of main
 # pkey_var - variable name of primary key of main
-def init(main: str, pkey: str, pkey_var: str) -> None:
+def init(main: dict, pkey: str, pkey_var: str) -> None:
     queries[0] += f'''do $$
 declare
-{ pkey_var } { main }.{ pkey }%type;
+{ pkey_var } { main['table'] }.{ pkey }%type;
 begin\n
 '''
 
@@ -45,7 +45,7 @@ returning { pkey } into { pkey_var };\n
 # query for headers
 # header - the header data
 # junc_fields - junc_fields dictionary from config json
-# junc_where - an element from junc_where list from config json
+# junc_where - an element from junc_wheres list from config json
 # pkey - primary key field of main
 # pkey_var - variable name of primary key of main
 def junc_query(header: str, junc_fields: dict, junc_where: list, pkey: str, pkey_var: str) -> None:
