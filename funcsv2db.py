@@ -138,7 +138,7 @@ def _table_eval(in_str: str, idx: int, jw: list,
     for i in re.finditer('{.*?}', in_str):
         jump = int(0 if i.group()[1:-1] == '' else i.group()[1:-1])
         ext_str = ''
-            
+
         if jw[0] == 'r':
             if jump == 0:
                 ext_str = h_in_r[jw[1]][idx]
@@ -147,7 +147,7 @@ def _table_eval(in_str: str, idx: int, jw: list,
         elif jw[0] == 'c':
             ext_str = row_cl[jw[1] + jump]
             if jump == 0 and jw[1] in saved_h_in_c:
-                saved_h_in_c[jw[1]], ext_str = _fill_curr(saved_h_in_c[jw[1]], ext_str)
+                saved_h_in_c[jw[1]], ext_str = _fill_curr(ext_str, saved_h_in_c[jw[1]])
 
         eval_str += in_str[last_end:i.start()] + ext_str
         last_end = i.end()
