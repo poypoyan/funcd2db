@@ -49,9 +49,9 @@ returning { pkey } into { pkey_var };\n
 # pkey - primary key field of main
 # pkey_var - variable name of primary key of main
 def junc_query(header: str, junc_fields: dict, junc_where: list, pkey: str, pkey_var: str) -> None:
-    joined_fields = ', '.join(junc_fields[junc_where[2]])
-    queries[0] += f'''insert into { junc_where[2] } ({ joined_fields })
-select { pkey_var }, { pkey } from { junc_where[3] } where { junc_where[4] } = \'{ header }\';\n
+    joined_fields = ', '.join(junc_fields[junc_where['junc_table']])
+    queries[0] += f'''insert into { junc_where['junc_table'] } ({ joined_fields })
+select { pkey_var }, { pkey } from { junc_where['other_table'] } where { junc_where['field'] } = \'{ header }\';\n
 '''
 
 
@@ -60,7 +60,7 @@ def capitalize(s: str) -> str:
     return s.capitalize()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     csv_config = 'sample-data/config.json'
 
     with open(csv_config, 'r') as conf_file:
@@ -72,7 +72,5 @@ if __name__ == "__main__":
     # optional parameters:
     # * limit: int = None - to limit the entries to be processed
     # * svsrsd: bool = True - SVSRSD assumption
-    # * ditto_row: bool = True - ditto assumption for row headers
-    # * ditto_col: bool = True - ditto assumption for column headers
     funcsv2db.convert(csv_extract, init, end, main_query, junc_query, conf, capitalize, in_vars)
     print(queries[0])

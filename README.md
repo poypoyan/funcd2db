@@ -13,5 +13,6 @@ Let's call the cells inside the blue, red, and green boxes *entries*, *headers i
 
 ## Assumptions
 - The primary key fields for all tables have the same name (`id` by default). It is possible to override this in your custom `main_query` and `junc_query` functions.
-- By default, the empty cells in headers that directly correspond to insertions follow *ditto* (i.e., same as the previous non-empty cell). This can be disabled in the `convert` function.
+- The evaluated string will not have trailing spaces nor multiple consecutive spaces between non-space characters.
+- The *ditto* in the configuration JSON file means that if true, then empty cells in headers will have the same value as the previous non-empty cell.
 - By default, *Same Value in Same Row is Same Data* (SVSRSD). For example, the "siák" entry below "Nominative" and the one below "Possessive" will be one inserted data to main table. This can be disabled in the `convert` function.

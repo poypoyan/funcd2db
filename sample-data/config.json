@@ -13,10 +13,22 @@
         "term_property": ["term", "prop"]
     },
     "junc_wheres": [
-        ["", 0, "term_refs", "reference", "name", "{ref}"],
-        ["c", 0, "term_property", "property_node", "name", "{}"],
-        ["c", 1, "term_property", "property_node", "name", "{}"],
-        ["r", 0, "term_property", "property_node", "displayname", "{1} {} Case"]
+        {
+            "row_col": "", "nth": 0, "ditto": false, "junc_table": "term_refs",
+            "other_table": "reference" , "field": "name", "value": "{ref}"
+        },
+        {
+            "row_col": "c", "nth": 0, "ditto": false, "junc_table": "term_property",
+            "other_table": "property_node" , "field": "name", "value": "{}"
+        },
+        {
+            "row_col": "c", "nth": 1, "ditto": true, "junc_table": "term_property",
+            "other_table": "property_node" , "field": "name", "value": "{}"
+        },
+        {
+            "row_col": "r", "nth": 0, "ditto": true, "junc_table": "term_property",
+            "other_table": "property_node" , "field": "displayname", "value": "{1} {} Case"
+        }
     ],
     "header_rows": 2,
     "header_cols": 2
