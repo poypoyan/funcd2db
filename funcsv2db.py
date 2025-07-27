@@ -69,7 +69,7 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
             skip_svsrsd = []
 
             for i, j in enumerate(row_cl[conf['header_cols']:]):
-                if i in skip_svsrsd:
+                if i in skip_svsrsd or j.strip() == '':
                     continue
 
                 main_cb(pre_process(j), main_copy, in_vars['pkey'], main_pkey)
