@@ -27,7 +27,6 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
             if i['nth'] in check_col:
                 raise ValueError(f'Detected duplicate "junc_where" entry for column { i['nth'] }.')
             check_col.add(i['nth'])
-
             if i['ditto']:
                 saved_h_in_c[i['nth']] = ''
 
@@ -38,15 +37,12 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
             h_in_r.append(_clean_list(next(csv_reader)[conf['header_cols']:]))
 
         # check rows and apply ditto
-        max_r = max([len(i) for i in h_in_r])
         check_row = set()
         for i in conf['junc_wheres']:
             if i['row_col'] == 'r':
                 if i['nth'] in check_row:
                     raise ValueError(f'Detected duplicate "junc_where" entry for row { i['nth'] }.')
                 check_row.add(i['nth'])
-                h_in_r[i['nth']] += [''] * (max_r - len(h_in_r[i['nth']]))
-
                 if i['ditto']:
                     temp_r = ''
                     for j0, j1 in enumerate(h_in_r[i['nth']]):
@@ -149,8 +145,11 @@ def _table_eval(in_str: str, idx: int, jw: dict,
 
         if jw['row_col'] == 'r':
             if jump == 0:
-                append_str = h_in_r[jw['nth']][idx]
-            elif idx < len(h_in_r[jw['nth'] + jump]):
+                if idx < len(h_in_r[jw['nth']]):
+                    append_str = h_in_r[jw['nth']][idx]
+                elif jw['ditto']:
+                    append_str = h_in_r[jw['nth']][-1]
+            elif jump > 0 and idx < len(h_in_r[jw['nth'] + jump]):
                 append_str = h_in_r[jw['nth'] + jump][idx]
         elif jw['row_col'] == 'c':
             append_str = row_cl[jw['nth'] + jump]
