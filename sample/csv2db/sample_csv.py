@@ -1,7 +1,8 @@
 # Distributed under the MIT software license. See the accompanying
 # file LICENSE or https://opensource.org/license/mit/.
 
-import json, funcsv2db
+from funcd2db import csv2db
+import json
 
 
 # the four functions below just append (unsafe) insert queries
@@ -61,16 +62,16 @@ def capitalize(s: str) -> str:
 
 
 if __name__ == '__main__':
-    csv_config = 'sample-data/config.json'
+    csv_config = 'config.json'
 
     with open(csv_config, 'r') as conf_file:
         conf = json.loads(conf_file.read())
 
-    csv_extract = 'sample-data/pangasinan-personal-pronouns.csv'
+    csv_extract = 'pangasinan-personal-pronouns.csv'
     in_vars = {'lang': 'Pangasinan', 'ref': 'pang-ref-grammar-benton'}
 
     # optional parameters:
     # * limit: int = None - to limit the entries to be processed
     # * svsrsd: bool = True - SVSRSD assumption
-    funcsv2db.convert(csv_extract, init, end, main_query, junc_query, conf, capitalize, in_vars)
+    csv2db.convert(csv_extract, init, end, main_query, junc_query, conf, capitalize, in_vars)
     print(queries[0])

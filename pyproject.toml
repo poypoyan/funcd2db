@@ -3,10 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "funcsv2db"
+name = "funcd2db"
 version = "0.0.1"
-description = "A CSV processor to insert to database for use in Funcwords project."
+description = "Data processors to insert to database for use in Funcwords project."
 license = "MIT"
 
 [tool.hatch.build.targets.wheel]
-only-include = ["funcsv2db.py"]
+only-include = ["src"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = "funcd2db"
+

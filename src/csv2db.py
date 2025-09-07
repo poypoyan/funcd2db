@@ -1,5 +1,5 @@
-# Funcsv2db - A CSV processor to insert to database for use in Funcwords project.
-# By poypoyan
+# csv2db - A CSV processor
+# Component of funcd2db project by poypoyan
 # 
 # Distributed under the MIT software license. See the accompanying
 # file LICENSE or https://opensource.org/license/mit/.

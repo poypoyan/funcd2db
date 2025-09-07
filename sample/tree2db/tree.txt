@@ -1,0 +1,10 @@
+Danao
+    Iranun, 0, iran1262
+        Illanun, 3
+    Maguindanao, 0
+        Maguindanaon, 3
+        Basa Magindanawn, 3
+        Magindanawn, 3
+    Maranao, 0, mara1404
+        Mëranaw, 3
+        Basa Mëranaw, 3
