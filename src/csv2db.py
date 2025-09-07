@@ -1,4 +1,4 @@
-# csv2db - A CSV processor
+# csv2db, a CSV processor
 # Component of funcd2db project by poypoyan
 # 
 # Distributed under the MIT software license. See the accompanying

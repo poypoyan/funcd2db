@@ -1,4 +1,4 @@
-# treedb - An indent tree text processor
+# treedb, an indent tree text processor
 # Component of funcd2db project by poypoyan
 # 
 # Distributed under the MIT software license. See the accompanying

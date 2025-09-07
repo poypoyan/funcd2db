@@ -1,7 +1,7 @@
 # csv2db
 A CSV processor to insert to database for use in Funcwords project.
 
-Just run `sample.py` for example output and read the code for usage. The output to stdout is just a "do" block with (unsafe) insert queries inside.
+Just run `sample_csv.py` in `sample/csv2db` directory for example output and read the code for usage. The output to stdout is just a "do" block with (unsafe) insert queries inside.
 
 ## Use Case
 
@@ -30,7 +30,7 @@ The mention of "evaluation" in the above section is because of the string interp
 
 ## Assumptions
 - The primary key fields for all tables have the same name (`id` by default). It is possible to override this in your custom callbacks `main_cb` and `junc_cb`.
-- The evaluated string for header values will not have leading and trailing spaces nor multiple consecutive spaces between non-space characters.
+- The evaluated string for header values will have leading and trailing spaces *removed*, and have multiple consecutive spaces between non-space characters *reduced to a single space*.
 - The *ditto* in the configuration JSON file means that if true, then empty cells in headers will have the same value as the previous non-empty cell.
 - By default, *Same Value in Same Row is Same Data* (SVSRSD). For example, the "siák" entry below "Nominative" and the one below "Oblique" will be one inserted data to main table. This can be disabled in the `convert` function.
 - Empty or just spaces cell in entry means no execution of custom callbacks.

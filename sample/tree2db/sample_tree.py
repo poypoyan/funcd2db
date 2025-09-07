@@ -3,7 +3,7 @@
 
 from funcd2db import tree2db
 
-
+# this prints a series of (unsafe) insert queries
 def query(entry: str, prev: str, mode: int, extra: list) -> None:
     if 0 <= mode <= 2:
         if len(extra) > 0:
