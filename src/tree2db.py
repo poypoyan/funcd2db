@@ -37,7 +37,7 @@ def convert(extract_file: str, query_cb, indent: int=4) -> None:
 
                     prev_depth = depth
                     if depth > 0:
-                        query_cb(line_main[0], store_depth[depth - 1], int(line_main[1]), line_main[2:])
+                        query_cb(line_main, store_depth[depth - 1])
 
 
 def _clean_list(l: list) -> list:

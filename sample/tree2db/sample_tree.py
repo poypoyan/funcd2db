@@ -4,11 +4,13 @@
 from funcd2db import tree2db
 
 # this prints a series of (unsafe) insert queries
-def query(entry: str, prev: str, mode: int, extra: list) -> None:
+def query(line: list, prev: str) -> None:
+    entry = line[0]
+    mode = int(line[1])
     if 0 <= mode <= 2:
-        if len(extra) > 0:
+        if len(line) > 2:
             gl_field = ', Glottolog'
-            gl_entry = f', \'{ extra[0] }\''
+            gl_entry = f', \'{ line[2] }\''
         else:
             gl_field = ''
             gl_entry = ''
