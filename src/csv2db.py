@@ -85,6 +85,9 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
                     else:
                         final_eval = _table_eval(iv_evaled, i, k, row_cl, h_in_r, saved_h_in_c)
 
+                    if final_eval.strip() == '':
+                        continue
+
                     junc_cb(final_eval, conf['junc_fields'], k, in_vars['pkey'], main_pkey)
 
                     if k['row_col'] == 'r':

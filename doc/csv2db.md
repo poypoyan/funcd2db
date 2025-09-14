@@ -33,4 +33,4 @@ The mention of "evaluation" in the above section is because of the string interp
 - The evaluated string for header values will have leading and trailing spaces *removed*, and have multiple consecutive spaces between non-space characters *reduced to a single space*.
 - The *ditto* in the configuration JSON file means that if true, then empty cells in headers will have the same value as the previous non-empty cell.
 - By default, *Same Value in Same Row is Same Data* (SVSRSD). For example, the "siák" entry below "Nominative" and the one below "Oblique" will be one inserted data to main table. This can be disabled in the `convert` function.
-- Empty or just spaces cell in entry means no execution of custom callbacks.
+- Empty or just spaces cell of entry or header to be inserted means no execution of custom callbacks.
