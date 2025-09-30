@@ -27,7 +27,11 @@
         },
         {
             "row_col": "r", "nth": 0, "ditto": true, "junc_table": "term_property",
-            "other_table": "property_node" , "field": "displayname", "value": "{1} {} Case"
+            "other_table": "property_node" , "field": "displayname", "value": "{} Case"
+        },
+        {
+            "row_col": "r", "nth": 1, "ditto": false, "junc_table": "term_property",
+            "other_table": "property_node" , "field": "displayname", "value": "{}"
         }
     ],
     "header_rows": 2,
