@@ -73,5 +73,6 @@ if __name__ == '__main__':
     # optional parameters:
     # * limit: int = None - to limit the entries to be processed
     # * svsrsd: bool = True - SVSRSD assumption
+    # * transpose: bool = False - read by column instead of by row; to simulate SCSRSD assumption.
     csv2db.convert(csv_extract, init, end, main_query, junc_query, conf, capitalize, in_vars)
     print(queries[0])

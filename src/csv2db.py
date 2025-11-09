@@ -10,7 +10,7 @@ import csv, re
 
 
 def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
-    conf: dict, pre_process, in_vars: dict, limit: int = None, svsrsd: bool = True) -> None:
+    conf: dict, pre_process, in_vars: dict, limit: int = None, svsrsd: bool = True, transpose = False) -> None:
     if not 'pkey' in in_vars:
         in_vars['pkey'] = 'id'
 
@@ -20,85 +20,98 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
     limit_ctr = 0
     main_copy = None
 
+    if transpose:
+        rc_chars = ['c', 'r']
+        header_rows = conf['header_cols']
+        header_cols = conf['header_rows']
+    else:
+        rc_chars = ['r', 'c']
+        header_rows = conf['header_rows']
+        header_cols = conf['header_cols']
+
     # check cols and apply ditto
     check_col = set()
     for i in conf['junc_wheres']:
-        if i['row_col'] == 'c':
+        if i['row_col'] == rc_chars[1]:
             if i['nth'] in check_col:
                 raise ValueError(f'Detected duplicate "junc_where" entry for column { i['nth'] }.')
             check_col.add(i['nth'])
             if i['ditto']:
                 saved_h_in_c[i['nth']] = ''
 
+    csv_all = None
     with open(extract_file) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
+        csv_all = list(csv.reader(csv_file))
 
-        for _ in range(conf['header_rows']):
-            h_in_r.append(_clean_list(next(csv_reader)[conf['header_cols']:]))
+    if transpose:
+        csv_all = [list(i) for i in zip(*csv_all)]
 
-        # check rows and apply ditto
-        check_row = set()
-        for i in conf['junc_wheres']:
-            if i['row_col'] == 'r':
-                if i['nth'] in check_row:
-                    raise ValueError(f'Detected duplicate "junc_where" entry for row { i['nth'] }.')
-                check_row.add(i['nth'])
-                if i['ditto']:
-                    temp_r = ''
-                    for j0, j1 in enumerate(h_in_r[i['nth']]):
-                        h_in_r[i['nth']][j0], temp_r = _fill_curr(j1, temp_r)
+    for i in range(header_rows):
+        h_in_r.append(_clean_list(csv_all[i][header_cols:]))
 
-        init_cb(conf['main'], in_vars['pkey'], main_pkey)
+    # check rows and apply ditto
+    check_row = set()
+    for i in conf['junc_wheres']:
+        if i['row_col'] == rc_chars[0]:
+            if i['nth'] in check_row:
+                raise ValueError(f'Detected duplicate "junc_where" entry for row { i['nth'] }.')
+            check_row.add(i['nth'])
+            if i['ditto']:
+                temp_r = ''
+                for j0, j1 in enumerate(h_in_r[i['nth']]):
+                    h_in_r[i['nth']][j0], temp_r = _fill_curr(j1, temp_r)
 
-        # evaluate values in main dict
-        main_copy = deepcopy(conf['main'])
-        main_copy['other_values'] = [_in_vars_eval(i, in_vars) for i in main_copy['other_values']]
-        for i in main_copy['where']:
-            i[1] = _in_vars_eval(i[1], in_vars)
+    init_cb(conf['main'], in_vars['pkey'], main_pkey)
 
-        for row in csv_reader:
-            row_cl = _clean_list(row)
+    # evaluate values in main dict
+    main_copy = deepcopy(conf['main'])
+    main_copy['other_values'] = [_in_vars_eval(i, in_vars) for i in main_copy['other_values']]
+    for i in main_copy['where']:
+        i[1] = _in_vars_eval(i[1], in_vars)
 
-            # conversion main part
-            # assumes "Same Value in Same Row is Same Data" (SVSRSD) principle:
-            # if a value is found more than once in a row, all of that is one main data in database.
-            skip_svsrsd = []
+    for row in csv_all[header_rows:]:
+        row_cl = _clean_list(row)
 
-            for i, j in enumerate(row_cl[conf['header_cols']:]):
-                if i in skip_svsrsd or j.strip() == '':
+        # conversion main part
+        # assumes "Same Value in Same Row is Same Data" (SVSRSD) principle:
+        # if a value is found more than once in a row, all of that is one main data in database.
+        skip_svsrsd = []
+
+        for i, j in enumerate(row_cl[header_cols:]):
+            if i in skip_svsrsd or j.strip() == '':
+                continue
+
+            main_cb(pre_process(j), main_copy, in_vars['pkey'], main_pkey)
+
+            rows_svsrsd = []
+            if svsrsd:
+                for k0, k1 in enumerate(row_cl[header_cols + i + 1:]):
+                    if k1 == j:
+                        skip_idx = i + k0 + 1
+                        skip_svsrsd.append(skip_idx)
+                        rows_svsrsd.append(skip_idx)
+
+            for k in conf['junc_wheres']:
+                iv_evaled = _in_vars_eval(k['value'], in_vars)
+                if k['row_col'] == '':
+                    final_eval = iv_evaled
+                else:
+                    final_eval = _table_eval(iv_evaled, i, k, row_cl, h_in_r, saved_h_in_c, rc_chars)
+
+                if final_eval.strip() == '':
                     continue
 
-                main_cb(pre_process(j), main_copy, in_vars['pkey'], main_pkey)
+                junc_cb(final_eval, conf['junc_fields'], k, in_vars['pkey'], main_pkey)
 
-                rows_svsrsd = []
-                if svsrsd:
-                    for k0, k1 in enumerate(row_cl[conf['header_cols'] + i + 1:]):
-                        if k1 == j:
-                            skip_idx = i + k0 + 1
-                            skip_svsrsd.append(skip_idx)
-                            rows_svsrsd.append(skip_idx)
-
-                for k in conf['junc_wheres']:
-                    iv_evaled = _in_vars_eval(k['value'], in_vars)
-                    if k['row_col'] == '':
-                        final_eval = iv_evaled
-                    else:
-                        final_eval = _table_eval(iv_evaled, i, k, row_cl, h_in_r, saved_h_in_c)
-
-                    if final_eval.strip() == '':
-                        continue
-
-                    junc_cb(final_eval, conf['junc_fields'], k, in_vars['pkey'], main_pkey)
-
-                    if k['row_col'] == 'r':
-                        for l in rows_svsrsd:
-                            junc_cb(_table_eval(iv_evaled, l, k, row_cl, h_in_r, saved_h_in_c),
-                                conf['junc_fields'], k, in_vars['pkey'], main_pkey)
-                limit_ctr += 1
-                if limit != None and limit_ctr >= limit:
-                    break
+                if k['row_col'] == rc_chars[0]:
+                    for l in rows_svsrsd:
+                        junc_cb(_table_eval(iv_evaled, l, k, row_cl, h_in_r, saved_h_in_c, rc_chars),
+                            conf['junc_fields'], k, in_vars['pkey'], main_pkey)
+            limit_ctr += 1
             if limit != None and limit_ctr >= limit:
                 break
+        if limit != None and limit_ctr >= limit:
+            break
     end_cb()
 
 
@@ -139,14 +152,14 @@ def _in_vars_eval(in_str: str, in_vars: dict) -> str:
 
 
 def _table_eval(in_str: str, idx: int, jw: dict,
-    row_cl: list, h_in_r: list, saved_h_in_c: list) -> str:
+    row_cl: list, h_in_r: list, saved_h_in_c: list, rc_chars: list) -> str:
     eval_str = ''
     last_end = 0
     for i in re.finditer('{.*?}', in_str):
         jump = int(0 if i.group()[1:-1] == '' else i.group()[1:-1])
         append_str = ''
 
-        if jw['row_col'] == 'r':
+        if jw['row_col'] == rc_chars[0]:
             if jump == 0:
                 if idx < len(h_in_r[jw['nth']]):
                     append_str = h_in_r[jw['nth']][idx]
@@ -154,7 +167,7 @@ def _table_eval(in_str: str, idx: int, jw: dict,
                     append_str = h_in_r[jw['nth']][-1]
             elif jump > 0 and idx < len(h_in_r[jw['nth'] + jump]):
                 append_str = h_in_r[jw['nth'] + jump][idx]
-        elif jw['row_col'] == 'c':
+        elif jw['row_col'] == rc_chars[1]:
             append_str = row_cl[jw['nth'] + jump]
             if jump == 0 and jw['nth'] in saved_h_in_c:
                 saved_h_in_c[jw['nth']], append_str = _fill_curr(append_str, saved_h_in_c[jw['nth']])

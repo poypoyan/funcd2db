@@ -32,5 +32,5 @@ The mention of "evaluation" in the above section is because of the string interp
 - The primary key fields for all tables have the same name (`id` by default). It is possible to override this in your custom callbacks `main_cb` and `junc_cb`.
 - The evaluated string for header values will have leading and trailing spaces *removed*, and have multiple consecutive spaces between non-space characters *reduced to a single space*.
 - The *ditto* in the configuration JSON file means that if true, then empty cells in headers will have the same value as the previous non-empty cell.
-- By default, *Same Value in Same Row is Same Data* (SVSRSD). For example, the "siák" entry below "Nominative" and the one below "Oblique" will be one inserted data to main table. This can be disabled in the `convert` function.
+- By default, *Same Value in Same Row is Same Data* (SVSRSD). For example, the "siák" entry below "Nominative" and the one below "Oblique" will be one inserted data to main table. This can be disabled in the `convert` function. Moveover, there is a `transpose` boolean parameter, disabled by default, in `convert` function to read by column instead of by row and hence, to simulate same *column* in same row is same data.
 - Empty or just spaces cell of entry or header to be inserted means no execution of custom callbacks.
