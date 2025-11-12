@@ -92,21 +92,25 @@ def convert(extract_file: str, init_cb, end_cb, main_cb, junc_cb,
                         rows_svsrsd.append(skip_idx)
 
             for k in conf['junc_wheres']:
-                iv_evaled = _in_vars_eval(k['value'], in_vars)
+                iv_eval = _in_vars_eval(k['value'], in_vars)
                 if k['row_col'] == '':
-                    final_eval = iv_evaled
+                    junc_eval = iv_eval
                 else:
-                    final_eval = _table_eval(iv_evaled, i, k, row_cl, h_in_r, saved_h_in_c, rc_chars)
+                    junc_eval = _table_eval(iv_eval, i, k, row_cl, h_in_r, saved_h_in_c, rc_chars)
 
-                if final_eval.strip() == '':
+                if junc_eval.strip() == '':
                     continue
 
-                junc_cb(final_eval, conf['junc_fields'], k, in_vars['pkey'], main_pkey)
+                junc_cb(junc_eval, conf['junc_fields'], k, in_vars['pkey'], main_pkey)
 
                 if k['row_col'] == rc_chars[0]:
                     for l in rows_svsrsd:
-                        junc_cb(_table_eval(iv_evaled, l, k, row_cl, h_in_r, saved_h_in_c, rc_chars),
-                            conf['junc_fields'], k, in_vars['pkey'], main_pkey)
+                        junc_svsrsd_eval = _table_eval(iv_eval, l, k, row_cl, h_in_r, saved_h_in_c, rc_chars)
+
+                        if junc_svsrsd_eval.strip() == '':
+                            continue
+
+                        junc_cb(junc_svsrsd_eval, conf['junc_fields'], k, in_vars['pkey'], main_pkey)
             limit_ctr += 1
             if limit != None and limit_ctr >= limit:
                 break
